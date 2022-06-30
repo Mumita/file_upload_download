@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yumita.dao.FileupdownFileDao">
+
+    <resultMap type="com.yumita.entity.FileupdownFile" id="FileupdownFileMap">
+        <result property="fileId" column="file_id" jdbcType="INTEGER"/>
+        <result property="fileOldfilename" column="file_oldFileName" jdbcType="VARCHAR"/>
+        <result property="fileNewfilename" column="file_newFileName" jdbcType="VARCHAR"/>
+        <result property="fileExt" column="file_ext" jdbcType="VARCHAR"/>
+        <result property="filePath" column="file_path" jdbcType="VARCHAR"/>
+        <result property="fileSize" column="file_size" jdbcType="VARCHAR"/>
+        <result property="fileType" column="file_type" jdbcType="VARCHAR"/>
+        <result property="fileIsimg" column="file_isImg" jdbcType="VARCHAR"/>
+        <result property="fileDowncounts" column="file_downcounts" jdbcType="INTEGER"/>
+        <result property="fileUploadtime" column="file_uploadTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="FileupdownFileMap">
+        select
+          file_id, file_oldFileName, file_newFileName, file_ext, file_path, file_size, file_type, file_isImg, file_downcounts, file_uploadTime
+        from file_updown.fileupdown_file
+        where file_id = #{fileId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="FileupdownFileMap">
+        select
+          file_id, file_oldFileName, file_newFileName, file_ext, file_path, file_size, file_type, file_isImg, file_downcounts, file_uploadTime
+        from file_updown.fileupdown_file
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="FileupdownFileMap">
+        select
+          file_id, file_oldFileName, file_newFileName, file_ext, file_path, file_size, file_type, file_isImg, file_downcounts, file_uploadTime
+        from file_updown.fileupdown_file
+        <where>
+            <if test="fileId != null">
+                and file_id = #{fileId}
+            </if>
+            <if test="fileOldfilename != null and fileOldfilename != ''">
+                and file_oldFileName = #{fileOldfilename}
+            </if>
+            <if test="fileNewfilename != null and fileNewfilename != ''">
+                and file_newFileName = #{fileNewfilename}
+            </if>
+            <if test="fileExt != null and fileExt != ''">
+                and file_ext = #{fileExt}
+            </if>
+            <if test="filePath != null and filePath != ''">
+                and file_path = #{filePath}
+            </if>
+            <if test="fileSize != null and fileSize != ''">
+                and file_size = #{fileSize}
+            </if>
+            <if test="fileType != null and fileType != ''">
+                and file_type = #{fileType}
+            </if>
+            <if test="fileIsimg != null and fileIsimg != ''">
+                and file_isImg = #{fileIsimg}
+            </if>
+            <if test="fileDowncounts != null">
+                and file_downcounts = #{fileDowncounts}
+            </if>
+            <if test="fileUploadtime != null">
+                and file_uploadTime = #{fileUploadtime}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="fileId" useGeneratedKeys="true">
+        insert into file_updown.fileupdown_file(file_oldFileName, file_newFileName, file_ext, file_path, file_size, file_type, file_isImg, file_downcounts, file_uploadTime)
+        values (#{fileOldfilename}, #{fileNewfilename}, #{fileExt}, #{filePath}, #{fileSize}, #{fileType}, #{fileIsimg}, #{fileDowncounts}, #{fileUploadtime})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update file_updown.fileupdown_file
+        <set>
+            <if test="fileOldfilename != null and fileOldfilename != ''">
+                file_oldFileName = #{fileOldfilename},
+            </if>
+            <if test="fileNewfilename != null and fileNewfilename != ''">
+                file_newFileName = #{fileNewfilename},
+            </if>
+            <if test="fileExt != null and fileExt != ''">
+                file_ext = #{fileExt},
+            </if>
+            <if test="filePath != null and filePath != ''">
+                file_path = #{filePath},
+            </if>
+            <if test="fileSize != null and fileSize != ''">
+                file_size = #{fileSize},
+            </if>
+            <if test="fileType != null and fileType != ''">
+                file_type = #{fileType},
+            </if>
+            <if test="fileIsimg != null and fileIsimg != ''">
+                file_isImg = #{fileIsimg},
+            </if>
+            <if test="fileDowncounts != null">
+                file_downcounts = #{fileDowncounts},
+            </if>
+            <if test="fileUploadtime != null">
+                file_uploadTime = #{fileUploadtime},
+            </if>
+        </set>
+        where file_id = #{fileId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from file_updown.fileupdown_file where file_id = #{fileId}
+    </delete>
+
+</mapper>

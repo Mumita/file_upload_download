@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yumita.dao.FileupdownUserDao">
+
+    <resultMap type="com.yumita.entity.FileupdownUser" id="FileupdownUserMap">
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="userUsername" column="user_username" jdbcType="VARCHAR"/>
+        <result property="userPassword" column="user_password" jdbcType="VARCHAR"/>
+        <result property="userSalt" column="user_salt" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="FileupdownUserMap">
+        select
+          user_id, user_username, user_password, user_salt
+        from file_updown.fileupdown_user
+        where user_id = #{userId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="FileupdownUserMap">
+        select
+          user_id, user_username, user_password, user_salt
+        from file_updown.fileupdown_user
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="FileupdownUserMap">
+        select
+          user_id, user_username, user_password, user_salt
+        from file_updown.fileupdown_user
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="userUsername != null and userUsername != ''">
+                and user_username = #{userUsername}
+            </if>
+            <if test="userPassword != null and userPassword != ''">
+                and user_password = #{userPassword}
+            </if>
+            <if test="userSalt != null and userSalt != ''">
+                and user_salt = #{userSalt}
+            </if>
+        </where>
+    </select>
+
+    <select id="getByUsername" resultMap="FileupdownUserMap">
+        select
+          user_id, user_username, user_password, user_salt
+        from fileupdown_user
+        where user_username = #{username}
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert">
+        insert into file_updown.fileupdown_user(user_id, user_username, user_password, user_salt)
+        values (#{userId}, #{userUsername}, #{userPassword}, #{userSalt})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update file_updown.fileupdown_user
+        <set>
+            <if test="userUsername != null and userUsername != ''">
+                user_username = #{userUsername},
+            </if>
+            <if test="userPassword != null and userPassword != ''">
+                user_password = #{userPassword},
+            </if>
+            <if test="userSalt != null and userSalt != ''">
+                user_salt = #{userSalt},
+            </if>
+        </set>
+        where user_id = #{userId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from file_updown.fileupdown_user where user_id = #{userId}
+    </delete>
+
+</mapper>
