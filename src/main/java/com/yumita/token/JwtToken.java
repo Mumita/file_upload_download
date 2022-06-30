@@ -1,13 +1,26 @@
 package com.yumita.token;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 import org.apache.shiro.authc.HostAuthenticationToken;
 import org.apache.shiro.authc.RememberMeAuthenticationToken;
+import org.springframework.stereotype.Component;
 
+@Data
+@NoArgsConstructor
+@Accessors(chain = true)
+@Component
 public class JwtToken implements HostAuthenticationToken, RememberMeAuthenticationToken {
     private String token;
     private char[] password;
     private boolean rememberMe;
     private String host;
+
+    public JwtToken(String token) {
+        this.token = token;
+    }
 
     public JwtToken(String s, char[] password, boolean b, String token) {
         this.token = token;

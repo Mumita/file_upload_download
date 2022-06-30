@@ -13,12 +13,19 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UpdownUserRealm extends AuthorizingRealm {
     @Autowired
+    @Lazy
     private FileupdownUserService fileupdownUserService;
+
+    @Override
+    public boolean supports(AuthenticationToken authenticationToken) {
+        return authenticationToken instanceof JwtToken;
+    }
 
     // 扶着对应数据源的授权
     @Override
@@ -28,6 +35,7 @@ public class UpdownUserRealm extends AuthorizingRealm {
 
     // 负责对应数据源的认证
     @Override
+    // 从controller中的主体login()函数中得到token，只不过这里使用的是更加优秀的jwt
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         // 获取jwt字符串
         String jwtToken = (String) authenticationToken.getPrincipal();

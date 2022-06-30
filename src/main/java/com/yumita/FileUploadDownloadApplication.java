@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("com.yumita.com.yumita.mapper")
+@MapperScan("com.yumita.dao")
 public class FileUploadDownloadApplication {
 
     public static void main(String[] args) {
