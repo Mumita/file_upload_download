@@ -6,7 +6,6 @@ import com.yumita.shiro.realm.UpdownUserRealm;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -25,17 +24,21 @@ public class ShiroConfig {
     }
 
     //注入自定义的密码匹配器
-    @Autowired
-    private UserCredentialsMatcher userCredentialsMatcher;
+    @Bean(name = "userCredentialsMatcher")
+    public UserCredentialsMatcher getUserCredentialsMatcher() {
+        UserCredentialsMatcher userCredentialsMatcher = new UserCredentialsMatcher();
+        return userCredentialsMatcher;
+    }
 
     /*
     * `SecurityManager即安全管理器`，对全部的subject进行安全管理，它是shiro的核心，负责对所有的subject进行安全管理。
     * */
     @Bean
-    public DefaultWebSecurityManager getSecurityManager(@Qualifier("updownUserRealm")UpdownUserRealm updownUserRealm){
+    public DefaultWebSecurityManager getSecurityManager(@Qualifier("updownUserRealm")UpdownUserRealm updownUserRealm, @Qualifier("userCredentialsMatcher") UserCredentialsMatcher userCredentialsMatcher){
         DefaultWebSecurityManager manager = new DefaultWebSecurityManager();
         // 为用户realm设置密码适配器
         updownUserRealm.setCredentialsMatcher(userCredentialsMatcher);
+        System.out.println("密码适配chenggon"+userCredentialsMatcher);
         // 为安全管理器注入user相关的realm
         manager.setRealm(updownUserRealm);
         return manager;

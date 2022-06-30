@@ -1,5 +1,6 @@
 package com.yumita.shiro.matcher;
 
+import cn.hutool.crypto.SecureUtil;
 import com.yumita.entity.FileupdownUser;
 import com.yumita.service.FileupdownUserService;
 import com.yumita.token.JwtToken;
@@ -28,13 +29,15 @@ public class UserCredentialsMatcher extends SimpleCredentialsMatcher {
         }
         // 获取token带有的用户输入的密码
         String inPassword = String.valueOf(jwtToken.getPassword());
+        System.out.println("输入密码"+inPassword);
         // info为从realm中传过来的SimpleAuthenticationInfo对象，通过其获取数据库中的username
         String dbUsername = String.valueOf(info.getPrincipals());
         // 通过数据库中的用户名查找数据库，得出用户对象
         FileupdownUser dbUser = fileupdownUserService.getUserByUsername(dbUsername);
         // 从用户对象得出数据库中对应的密码
         String dbPassword = dbUser.getUserPassword();
+        System.out.println("数据库密码"+dbPassword);
         // 将用户输入密码和数据库中的密码进行比对
-        return this.equals(inPassword, dbPassword);
+        return this.equals(SecureUtil.md5(inPassword + dbUser.getUserSalt()), dbPassword);
     }
 }

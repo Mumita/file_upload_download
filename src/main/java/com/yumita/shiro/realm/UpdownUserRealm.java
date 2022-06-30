@@ -39,6 +39,7 @@ public class UpdownUserRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         // 获取jwt字符串
         String jwtToken = (String) authenticationToken.getPrincipal();
+        System.out.println(jwtToken);
         // 破解jwt字符串为JWT对象
         JWT jwt = JWT.of(jwtToken);
         // 从JWT对象中获得username
