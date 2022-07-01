@@ -87,6 +87,7 @@ public class FileupdownUserController {
         HashMap<String, Object> map = new HashMap<>();
         FileupdownUser fileUser = fileupdownUserService.getUserByUsername(user.getUserUsername());
         fileUser.setUserPassword(null);
+        fileUser.setUserSalt(null);
         map.put("user", fileUser);
         map.put("token", jwt);
         session.setAttribute("user", fileUser);

@@ -52,4 +52,5 @@ public interface FileupdownFileAndUserService {
      */
     boolean deleteById(Object ufId);
 
+    void save(FileupdownFileAndUser fileupdownFileAndUser, String newFilename);
 }

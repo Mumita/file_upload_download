@@ -63,4 +63,6 @@ public interface FileupdownFileDao {
 
     List<FileupdownFile> selectlistByUserId(Integer userId);
 
+    int selectIdByNewFilename(String newFilename);
+
 }

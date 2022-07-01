@@ -81,6 +81,14 @@
         where
           uf.user_id = #{userId}
     </select>
+    <select id="selectIdByNewFilename" resultType="java.lang.Integer">
+        select
+          file_id
+        from
+          fileupdown_file
+        where
+          file_newFileName = #{newFilename}
+    </select>
 
 
     <!--新增所有列-->

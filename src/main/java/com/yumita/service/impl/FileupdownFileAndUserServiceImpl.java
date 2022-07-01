@@ -1,5 +1,6 @@
 package com.yumita.service.impl;
 
+import com.yumita.dao.FileupdownFileDao;
 import com.yumita.entity.FileupdownFileAndUser;
 import com.yumita.dao.FileupdownFileAndUserDao;
 import com.yumita.service.FileupdownFileAndUserService;
@@ -16,6 +17,9 @@ import java.util.List;
  */
 @Service("fileupdownFileAndUserService")
 public class FileupdownFileAndUserServiceImpl implements FileupdownFileAndUserService {
+    @Resource
+    private FileupdownFileDao fileupdownFileDao;
+
     @Resource
     private FileupdownFileAndUserDao fileupdownFileAndUserDao;
 
@@ -75,5 +79,12 @@ public class FileupdownFileAndUserServiceImpl implements FileupdownFileAndUserSe
     @Override
     public boolean deleteById(Object ufId) {
         return this.fileupdownFileAndUserDao.deleteById(ufId) > 0;
+    }
+
+    @Override
+    public void save(FileupdownFileAndUser fileupdownFileAndUser, String newFilename) {
+        int fileId = this.fileupdownFileDao.selectIdByNewFilename(newFilename);
+        fileupdownFileAndUser.setFileId(fileId);
+        this.fileupdownFileAndUserDao.insert(fileupdownFileAndUser);
     }
 }

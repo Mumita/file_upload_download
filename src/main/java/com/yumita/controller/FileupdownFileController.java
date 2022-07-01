@@ -6,7 +6,9 @@ import cn.hutool.core.io.file.FileNameUtil;
 import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.core.util.IdUtil;
 import com.yumita.entity.FileupdownFile;
+import com.yumita.entity.FileupdownFileAndUser;
 import com.yumita.entity.FileupdownUser;
+import com.yumita.service.FileupdownFileAndUserService;
 import com.yumita.service.FileupdownFileService;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ResourceUtils;
@@ -20,20 +22,24 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Controller
 @RequestMapping("file")
 public class FileupdownFileController {
     @Resource
     private FileupdownFileService fileupdownFileService;
+    @Resource
+    private FileupdownFileAndUserService fileupdownFileAndUserService;
 
     @PostMapping("upload")
     public String upload(MultipartFile file, HttpSession session) {
+        FileupdownUser user = (FileupdownUser) session.getAttribute("user");
+        System.out.println("user："+user);
         // 获取文件的原始文件名
+        System.out.println("file："+file);
         String originalFileName = file.getOriginalFilename();
         // 获取文件后缀
-        String ext = FileNameUtil.extName(originalFileName);
+        String ext = "." + FileNameUtil.extName(originalFileName);
         // 生成新文件名称
         String newFileName = DateUtil.now()
                 .replace("-", "")
@@ -49,12 +55,15 @@ public class FileupdownFileController {
         try {
             // 获取文件本地存储位置
             String filesPath = ResourceUtils.getURL("classpath:").getPath()+ "/static/files";
+            System.out.println(filesPath);
             // 根据日期生成逐个文件夹
             String datePath = filesPath
                     + "/"
                     + DateUtil.today().replace("-", "");
+            System.out.println(datePath);
             // 创建文件夹文件对象
             File dataDir = new File(datePath);
+            System.out.println(dataDir+"======"+dataDir.getPath());
             // 判断是否存在，若不存在则创建多级目录
             if (!dataDir.exists()) {
                 dataDir.mkdirs();
@@ -67,11 +76,13 @@ public class FileupdownFileController {
                     .setFileSize(size)
                     .setFileOldfilename(originalFileName)
                     .setFileExt(ext)
-                    .setFilePath(datePath + "/" + newFileName)
+                    .setFilePath("/files" + "/" + DateUtil.today().replace("-", ""))
                     .setFileType(contentType)
                     .setFileUploadtime(new Date())
                     .setFileDowncounts(1);
             this.fileupdownFileService.save(fileupdownFile);
+            FileupdownFileAndUser fileupdownFileAndUser = new FileupdownFileAndUser().setUserId(user.getUserId());
+            this.fileupdownFileAndUserService.save(fileupdownFileAndUser, newFileName);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

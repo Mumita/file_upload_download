@@ -41,8 +41,9 @@
 </table>
 <hr>
 <h3>上传文件</h3>
-<form action="/file/upload" method="post" enctype="multipart/form-data">
-    <input type="file" name="aaa"><input type="submit" value="上传文件">
+<form th:action="@{/file/upload}" method="post" enctype="multipart/form-data">
+    <input type="file" name="file">
+    <input type="submit" value="上传文件">
 </form>
 </body>
 </html>
