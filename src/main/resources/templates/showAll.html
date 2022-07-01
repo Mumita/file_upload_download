@@ -29,13 +29,16 @@
         <th><span th:text="${file.getFilePath()}"/></th>
         <th><span th:text="${file.getFileSize()}"/></th>
         <th><span th:text="${file.getFileType()}"/></th>
-        <th><span th:text="${file.getFileIsimg()}"/><img src=""></th>
+        <th>
+            <span th:if="${file.getFileIsimg()} == '否'" th:text="否"/>
+            <img style="width: 100px; height: 40px;" th:if="${file.getFileIsimg()} == '是'" th:src="${file.getFilePath()+ '/' +file.getFileNewfilename()}">
+        </th>
         <th><span th:text="${file.getFileDowncounts()}"/></th>
         <th><span th:text="${file.getFileUploadtime()}"/></th>
         <th>
-            <a href="">下载</a>
-            <a href="">在线打开</a>
-            <a href="">删除</a>
+            <a style="width: 10px" th:href="@{/file/download(id=${file.getFileId()})}">下载</a>
+            <a style="width: 10px" th:href="@{/file/download(id=${file.getFileId()},openStyle='inline')}">在线打开</a>
+            <a style="width: 10px" href="">删除</a>
         </th>
     </tr>
 </table>

@@ -2,9 +2,12 @@ package com.yumita.controller;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.io.file.FileNameUtil;
 import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.core.util.IdUtil;
+import com.sun.deploy.net.HttpResponse;
+import com.sun.deploy.net.URLEncoder;
 import com.yumita.entity.FileupdownFile;
 import com.yumita.entity.FileupdownFileAndUser;
 import com.yumita.entity.FileupdownUser;
@@ -14,10 +17,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.resource.HttpResource;
+import sun.misc.IOUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,6 +39,9 @@ public class FileupdownFileController {
     @Resource
     private FileupdownFileAndUserService fileupdownFileAndUserService;
 
+    /*
+    * 上传
+    * */
     @PostMapping("upload")
     public String upload(MultipartFile file, HttpSession session) {
         FileupdownUser user = (FileupdownUser) session.getAttribute("user");
@@ -93,6 +104,38 @@ public class FileupdownFileController {
         }
 
         return "redirect:/file/showAll";
+    }
+
+    /*
+    * 下载
+    * */
+    @GetMapping("download")
+    public void download(String openStyle ,String id, HttpServletResponse response) {
+        // 获取打开方式
+        openStyle = openStyle == null?"attachment":openStyle;
+        // 通过文件id获取对象
+        FileupdownFile fileupdownFile = this.fileupdownFileService.queryById(Integer.valueOf(id));
+        try {
+            // 获取输入流
+            String path = ResourceUtils.getURL("classpath:").getPath()+"/static"+ fileupdownFile.getFilePath();
+            FileInputStream fileInputStream = new FileInputStream(new File(path, fileupdownFile.getFileNewfilename()));
+            // 附件下载
+            response.setHeader("content-disposition",openStyle+";fileName="+ URLEncoder.encode(fileupdownFile.getFileOldfilename(), "UTF-8"));
+            // 获取响应流
+            ServletOutputStream outputStream = response.getOutputStream();
+            long copy = IoUtil.copy(fileInputStream, outputStream);
+            fileInputStream.close();
+            outputStream.close();
+            if (openStyle == "attachment") {
+                fileupdownFile.setFileDowncounts(Integer.valueOf(fileupdownFile.getFileDowncounts())+1);
+                this.fileupdownFileService.update(fileupdownFile);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /*
