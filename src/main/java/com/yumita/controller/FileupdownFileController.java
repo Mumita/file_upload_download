@@ -50,6 +50,8 @@ public class FileupdownFileController {
         String size = Convert.toStr(file.getSize());
         // 获取文件种类
         String contentType = file.getContentType();
+        // 是否为图片
+        String isImg = contentType.contains("image")?"是":"否";
 
         // 处理文件上传
         try {
@@ -79,7 +81,8 @@ public class FileupdownFileController {
                     .setFilePath("/files" + "/" + DateUtil.today().replace("-", ""))
                     .setFileType(contentType)
                     .setFileUploadtime(new Date())
-                    .setFileDowncounts(1);
+                    .setFileDowncounts(0)
+                    .setFileIsimg(isImg);
             this.fileupdownFileService.save(fileupdownFile);
             FileupdownFileAndUser fileupdownFileAndUser = new FileupdownFileAndUser().setUserId(user.getUserId());
             this.fileupdownFileAndUserService.save(fileupdownFileAndUser, newFileName);
