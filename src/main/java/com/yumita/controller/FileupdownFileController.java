@@ -102,7 +102,6 @@ public class FileupdownFileController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return "redirect:/file/showAll";
     }
 
@@ -135,7 +134,26 @@ public class FileupdownFileController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    /*
+    * 删除
+    * */
+    @GetMapping("delete")
+    public String delete(String id) {
+        // 删除本地文件
+        FileupdownFile fileupdownFile = this.fileupdownFileService.queryById(Integer.valueOf(id));
+        try {
+            String filePath = ResourceUtils.getURL("classpath:").getPath()+"/static"+ fileupdownFile.getFilePath();
+            String datePath = filePath + "/" + fileupdownFile.getFileNewfilename();
+            File file = new File(datePath);
+            file.delete();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        // 删除数据库中数据
+        this.fileupdownFileService.deleteById(Integer.valueOf(id));
+        return "redirect:/file/showAll";
     }
 
     /*
