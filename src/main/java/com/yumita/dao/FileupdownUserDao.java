@@ -7,12 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * (FileupdownUser)表数据库访问层
- *
- * @author makejava
- * @since 2022-06-29 22:25:46
- */
 @Mapper
 @Repository
 public interface FileupdownUserDao {

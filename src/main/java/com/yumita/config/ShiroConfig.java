@@ -60,6 +60,7 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setFilters(jwtFilterMap);
         HashMap<String, String> filter = new HashMap<>();
         filter.put("/login", "anon"); // 如果请求是"/login"，就放它通过
+        filter.put("/showAll.html", "authc");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filter);
         return shiroFilterFactoryBean;
     }

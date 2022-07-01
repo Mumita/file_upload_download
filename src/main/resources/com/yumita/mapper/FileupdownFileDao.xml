@@ -70,6 +70,19 @@
         </where>
     </select>
 
+    <select id="selectlistByUserId" resultMap="FileupdownFileMap">
+        select
+          f.file_id, f.file_oldFileName, f.file_newFileName, f.file_ext, f.file_path, f.file_size, f.file_type, f.file_isImg, f.file_downcounts, f.file_uploadTime
+        from
+          fileupdown_file f
+        left join
+          fileupdown_file_and_user uf
+        on f.file_id = uf.file_id
+        where
+          uf.user_id = #{userId}
+    </select>
+
+
     <!--新增所有列-->
     <insert id="insert" keyProperty="fileId" useGeneratedKeys="true">
         insert into file_updown.fileupdown_file(file_oldFileName, file_newFileName, file_ext, file_path, file_size, file_type, file_isImg, file_downcounts, file_uploadTime)

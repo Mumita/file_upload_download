@@ -76,4 +76,14 @@ public class FileupdownFileServiceImpl implements FileupdownFileService {
     public boolean deleteById(Integer fileId) {
         return this.fileupdownFileDao.deleteById(fileId) > 0;
     }
+
+    @Override
+    public List<FileupdownFile> findListByUserId(Integer userId) {
+        return this.fileupdownFileDao.selectlistByUserId(userId);
+    }
+
+    @Override
+    public void save(FileupdownFile fileupdownFile) {
+        this.fileupdownFileDao.insert(fileupdownFile);
+    }
 }

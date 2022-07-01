@@ -7,12 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * (FileupdownFile)表数据库访问层
- *
- * @author makejava
- * @since 2022-06-29 00:36:35
- */
 @Mapper
 @Repository
 public interface FileupdownFileDao {
@@ -66,5 +60,7 @@ public interface FileupdownFileDao {
      * @return 影响行数
      */
     int deleteById(Integer fileId);
+
+    List<FileupdownFile> selectlistByUserId(Integer userId);
 
 }

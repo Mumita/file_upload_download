@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>欢迎下载</title>
 </head>
 <body>
-<h1>欢迎：xxxx</h1>
+<h1>欢迎：<span th:if="${session.user != null}" th:text="${session.user.getUserUsername()}"/></h1>
 <h1>文件列表：</h1>
 <table border="1px">
     <tr>
@@ -21,17 +21,17 @@
         <th>上传时间</th>
         <th>操作</th>
     </tr>
-    <tr>
-        <th>1</th>
-        <th>aaa.txt</th>
-        <th>uuid.txt</th>
-        <th>.txt</th>
-        <th>/files</th>
-        <th>1024</th>
-        <th>text/plain</th>
-        <th>否<img src=""></th>
-        <th>11</th>
-        <th>2020-12-12</th>
+    <tr th:each="file,fileStatus:${session.fileList}">
+        <th><span th:text="${file.getFileId()}"/></th>
+        <th><span th:text="${file.getFileOldfilename()}"/></th>
+        <th><span th:text="${file.getFileNewfilename()}"/></th>
+        <th><span th:text="${file.getFileExt()}"/></th>
+        <th><span th:text="${file.getFilePath()}"/></th>
+        <th><span th:text="${file.getFileSize()}"/></th>
+        <th><span th:text="${file.getFileType()}"/></th>
+        <th><span th:text="${file.getFileIsimg()}"/><img src=""></th>
+        <th><span th:text="${file.getFileDowncounts()}"/></th>
+        <th><span th:text="${file.getFileUploadtime()}"/></th>
         <th>
             <a href="">下载</a>
             <a href="">在线打开</a>
@@ -41,7 +41,7 @@
 </table>
 <hr>
 <h3>上传文件</h3>
-<form action="">
+<form action="/file/upload" method="post" enctype="multipart/form-data">
     <input type="file" name="aaa"><input type="submit" value="上传文件">
 </form>
 </body>

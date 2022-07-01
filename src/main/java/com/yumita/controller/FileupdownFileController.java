@@ -1,25 +1,95 @@
 package com.yumita.controller;
 
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.file.FileNameUtil;
+import cn.hutool.core.io.resource.ResourceUtil;
+import cn.hutool.core.util.IdUtil;
 import com.yumita.entity.FileupdownFile;
+import com.yumita.entity.FileupdownUser;
 import com.yumita.service.FileupdownFileService;
+import org.springframework.stereotype.Controller;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
-/**
- * (FileupdownFile)表控制层
- *
- * @author makejava
- * @since 2022-06-29 00:36:37
- */
-@RestController
-@RequestMapping("fileupdownFile")
+@Controller
+@RequestMapping("file")
 public class FileupdownFileController {
-    /**
-     * 服务对象
-     */
     @Resource
     private FileupdownFileService fileupdownFileService;
 
+    @PostMapping("upload")
+    public String upload(MultipartFile file, HttpSession session) {
+        // 获取文件的原始文件名
+        String originalFileName = file.getOriginalFilename();
+        // 获取文件后缀
+        String ext = FileNameUtil.extName(originalFileName);
+        // 生成新文件名称
+        String newFileName = DateUtil.now()
+                .replace("-", "")
+                .replace(":", "").replace(" ", "")
+                + IdUtil.randomUUID().replace("-", "")
+                + ext;
+        // 获取文件大小
+        String size = Convert.toStr(file.getSize());
+        // 获取文件种类
+        String contentType = file.getContentType();
 
+        // 处理文件上传
+        try {
+            // 获取文件本地存储位置
+            String filesPath = ResourceUtils.getURL("classpath:").getPath()+ "/static/files";
+            // 根据日期生成逐个文件夹
+            String datePath = filesPath
+                    + "/"
+                    + DateUtil.today().replace("-", "");
+            // 创建文件夹文件对象
+            File dataDir = new File(datePath);
+            // 判断是否存在，若不存在则创建多级目录
+            if (!dataDir.exists()) {
+                dataDir.mkdirs();
+            }
+            // 将文件上传到本地
+            file.transferTo(new File(dataDir , newFileName));
+            // 将文件数据保存到数据库
+            FileupdownFile fileupdownFile = new FileupdownFile()
+                    .setFileNewfilename(newFileName)
+                    .setFileSize(size)
+                    .setFileOldfilename(originalFileName)
+                    .setFileExt(ext)
+                    .setFilePath(datePath + "/" + newFileName)
+                    .setFileType(contentType)
+                    .setFileUploadtime(new Date())
+                    .setFileDowncounts(1);
+            this.fileupdownFileService.save(fileupdownFile);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return "redirect:/file/showAll";
+    }
+
+    /*
+    * 进入文件管理页面
+    * */
+    @RequestMapping("showAll")
+    public String showAll(HttpSession session) {
+        FileupdownUser user = (FileupdownUser) session.getAttribute("user");
+        ArrayList<FileupdownFile> listByUserId = (ArrayList<FileupdownFile>) this.fileupdownFileService.findListByUserId(user.getUserId());
+        session.setAttribute("fileList", listByUserId);
+        session.setAttribute("fileListSize", listByUserId.size());
+        return "/showAll";
+    }
 }

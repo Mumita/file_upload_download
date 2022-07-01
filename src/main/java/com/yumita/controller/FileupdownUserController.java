@@ -16,23 +16,16 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.subject.Subject;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 
-/**
- * (FileupdownUser)表控制层
- *
- * @author makejava
- * @since 2022-06-29 22:25:48
- */
-@RestController
-@RequestMapping("/user")
+@Controller
+@RequestMapping("user")
 public class FileupdownUserController {
-    /**
-     * 服务对象
-     */
     @Resource
     private FileupdownUserService fileupdownUserService;
 
@@ -40,11 +33,14 @@ public class FileupdownUserController {
      * 用户登录
      * */
     @CrossOrigin
-    @GetMapping("/login")
-    public String login(@RequestBody FileupdownUser user) {
+    @GetMapping("login")
+    public String login(FileupdownUser user, HttpSession session) {
+        System.out.println(user);
         if (user.getUserPassword() == null || user.getUserUsername() == null) {
             Result result = new Result().setMessage("用户名或密码错误！").setCode(405);
-            return JSONUtil.toJsonStr(result);
+            //return JSONUtil.toJsonStr(result);
+            System.out.println("用户名或密码错误！");
+            return "redirect:/index";
         }
         // 获取主体对象
         Subject subject = SecurityUtils.getSubject();
@@ -79,24 +75,33 @@ public class FileupdownUserController {
             subject.login(jwtToken);
             // 如果认证错误就返回错误响应
         }catch (UnknownAccountException e) {
-            return JSONUtil.toJsonStr(new Result().setCode(401).setMessage("用户名错误！"));
+            // return JSONUtil.toJsonStr(new Result().setCode(401).setMessage("用户名错误！"));
+            System.out.println("用户名错误！");
+            return "redirect:/index";
         }catch (IncorrectCredentialsException e) {
-            return JSONUtil.toJsonStr(new Result().setCode(401).setMessage("密码错误！"));
+            // return JSONUtil.toJsonStr(new Result().setCode(401).setMessage("密码错误！"));
+            System.out.println("密码错误！");
+            return "redirect:/index";
         }
-        //以下都是登录成功的操作
+        // 以下都是登录成功的操作
         HashMap<String, Object> map = new HashMap<>();
         FileupdownUser fileUser = fileupdownUserService.getUserByUsername(user.getUserUsername());
         fileUser.setUserPassword(null);
         map.put("user", fileUser);
         map.put("token", jwt);
-        return JSONUtil.toJsonStr(new Result().setMessage("登录成功！").setCode(200).setData(map));
+        session.setAttribute("user", fileUser);
+        Object user1 = session.getAttribute("user");
+        System.out.println(user1);
+        // return JSONUtil.toJsonStr(new Result().setMessage("登录成功！").setCode(200).setData(map));
+        return "redirect:/file/showAll";
     }
+
 
     /**
      * 用户注册
      * */
     @CrossOrigin
-    @PostMapping("/register")
+    @PostMapping("register")
     public String register(@RequestBody FileupdownUser user) {
         this.fileupdownUserService.insert(user);
         return JSONUtil.toJsonStr(new Result().setMessage("注册成功！").setCode(200));

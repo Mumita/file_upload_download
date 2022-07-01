@@ -52,4 +52,7 @@ public interface FileupdownFileService {
      */
     boolean deleteById(Integer fileId);
 
+    List<FileupdownFile> findListByUserId(Integer userId);
+
+    void save(FileupdownFile fileupdownFile);
 }
